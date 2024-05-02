@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Diffie-Hellman Key Exchange</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <h2>Diffie-Hellman Key Exchange</h2>
+    <div>
+        <h3>Enter Prime Number and Primitive Root</h3>
+        Prime Number: <input type="number" id="prime"><br><br>
+        Primitive Root: <input type="number" id="primitiveRoot"><br><br>
+        <button onclick="validateAndSetup()">Submit</button>
+    </div>
+    <div id="alice" style="display:none;">
+        <h3>Alice</h3>
+        Private Key: <input type="text" id="alicePrivateKey"><br><br>
+        <button onclick="generatePublicKeyAlice()">Generate Public Key</button>
+        <p>Public Key: <span id="alicePublicKey"></span></p>
+    </div>
+    <div id="bob" style="display:none;">
+        <h3>Bob</h3>
+        Private Key: <input type="text" id="bobPrivateKey"><br><br>
+        <button onclick="generatePublicKeyBob()">Generate Public Key</button>
+        <p>Public Key: <span id="bobPublicKey"></span></p>
+    </div>
+    <div>
+        <button onclick="computeSecretKey()">Compute Shared Secret Key</button>
+    </div>
+    <div>
+        <h3>Shared Secret Key</h3>
+        <p><span id="sharedSecretKey"></span></p>
+    </div>
+    <script>
+        let prime, primitiveRoot;
+        let alicePrivateKey, bobPrivateKey;
+        let alicePublicKey, bobPublicKey;
+
+        function validateAndSetup() {
+            prime = parseInt(document.getElementById('prime').value);
+            primitiveRoot = parseInt(document.getElementById('primitiveRoot').value);
+
+            if (!isPrime(prime)) {
+                alert("Please enter a prime number.");
+                return;
+            }
+
+            if (!isPrimitiveRoot(primitiveRoot, prime)) {
+                alert("Please enter a primitive root modulo the given prime number.");
+                return;
+            }
+
+            document.getElementById('alice').style.display = "block";
+            document.getElementById('bob').style.display = "block";
+        }
+
+        function isPrime(num) {
+            if (num <= 1) return false;
+            if (num <= 3) return true;
+            if (num % 2 === 0 || num % 3 === 0) return false;
+
+            for (let i = 5; i * i <= num; i += 6) {
+                if (num % i === 0 || num % (i + 2) === 0) return false;
+            }
+
+            return true;
+        }
+
+        function isPrimitiveRoot(a, p) {
+            if (!isPrime(p)) return false;
+            let result = 1;
+            let set = new Set();
+
+            for (let i = 0; i < p - 1; i++) {
+                result = (result * a) % p;
+                if (set.has(result) || result === 0) return false;
+                set.add(result);
+            }
+
+            return true;
+        }
+
+        function generatePublicKeyBob() {
+            bobPrivateKey = parseInt(document.getElementById('bobPrivateKey').value);
+            bobPublicKey = modExp(primitiveRoot, bobPrivateKey, prime);
+            document.getElementById('bobPublicKey').innerText = bobPublicKey;
+        }
+
+        function generatePublicKeyAlice() {
+            alicePrivateKey = parseInt(document.getElementById('alicePrivateKey').value);
+            alicePublicKey = modExp(primitiveRoot, alicePrivateKey, prime);
+            document.getElementById('alicePublicKey').innerText = alicePublicKey;
+        }
+
+        function computeSecretKey() {
+            const sharedSecretKey = modExp(bobPublicKey, alicePrivateKey, prime);
+            document.getElementById('sharedSecretKey').innerText = sharedSecretKey;
+        }
+
+        function modExp(base, exp, mod) {
+            if (mod === 1) return 0;
+            let result = 1;
+            base = base % mod;
+
+            while (exp > 0) {
+                if (exp % 2 === 1) {
+                    result = (result * base) % mod;
+                }
+                exp = Math.floor(exp / 2);
+                base = (base * base) % mod;
+            }
+
+            return result;
+        }
+    </script>
+</body>
+</html>
