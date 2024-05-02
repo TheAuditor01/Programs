@@ -1,0 +1,13 @@
+Covid: cough, fever
+Alzheimers: chest_pain, fatigue
+Asthma: fatigue, sunken_eyes
+Diabetes: fatigue, restlessness
+Epilepsy: headache, sunken_eyes
+Glaucoma: sunken_eyes, fever, sore_throat
+Heart_Disease: fainting
+Heat_Stroke: fainting, fever
+Hyperthyroidism: sunken_eyes, restlessness
+Hypothermia: chest_pain, fatigue, sore_throat
+Jaundice: cough, fever, headache
+Sinusitis: fever, sore_throat
+Tuberculosis: fatigue, sunken_eyes, fever, restlessness
